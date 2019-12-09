@@ -2,7 +2,7 @@ import numpy as np
 import tensorflow as tf
 
 SMALL = 0.0000001
-# Test
+
 # ===========================
 # ======= U T I L S =========
 # ===========================
@@ -211,8 +211,16 @@ class FactoredGatedAutoencoder:
 
             # store weights
             self.Wxf_np = np.array(Wxf.eval(sess))
+            print('ShapeX',self.Wxf_np.shape)
+
             self.Wyf_np = np.array(Wyf.eval(sess))
+
+            print('ShapeY', self.Wyf_np.shape)
+
             self.Whf_np = np.array(Whf.eval(sess))
+
+            print('ShapeH', self.Whf_np.shape)
+
             self.Whf_in_np = np.array(Whf_in.eval(sess))
             self.bmap_np = np.array(bmap.eval(sess))
             self.bx_np = np.array(bx.eval(sess))
