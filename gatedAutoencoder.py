@@ -62,17 +62,24 @@ class FactoredGatedAutoencoder:
         np.save(modelname + "bmap", self.bmap_np)
         np.save(modelname + "bx", self.bx_np)
         np.save(modelname + "by", self.by_np)
+        np.save(modelname + "Wtf", self.Wtf_np)
+        np.save(modelname + "bt", self.bt_np)
+
     
     def load_from_weights(self, modelname):
         """ restores weights from disk
         """
-        self.Wxf_np = np.load(modelname + "Wxf")
-        self.Wyf_np = np.load(modelname + "Wyf")
-        self.Whf_np = np.load(modelname + "Whf")
-        self.Whf_in_np = np.load(modelname + "Whf_in")
-        self.bmap_np = np.load(modelname + "bmap")
-        self.bx_np = np.load(modelname + "bx")
-        self.by_np = np.load(modelname + "by")
+        self.Wxf_np = np.load(modelname + "Wxf.npy")
+        self.Wyf_np = np.load(modelname + "Wyf.npy")
+        self.Whf_np = np.load(modelname + "Whf.npy")
+        self.Whf_in_np = np.load(modelname + "Whf_in.npy")
+        self.bmap_np = np.load(modelname + "bmap.npy")
+        self.bx_np = np.load(modelname + "bx.npy")
+        self.by_np = np.load(modelname + "by.npy")
+        self.Wtf_np= np.load(modelname + "Wtf.npy")
+        self.bt_np = np.load(modelname + "bt.npy")
+
+
         self.is_trained = True
     
     def inference(self, X, Y):
@@ -87,42 +94,58 @@ class FactoredGatedAutoencoder:
         eps_map = self.eps_map
         
         n, dim = X.shape
-        assert(dim == Y.shape[1])
+        assert (dim == Y.shape[1])
+        #dim=len(X)
+
+
         
         numpy_rng = np.random.RandomState(1)
         
-        if self.normalize_data:
-            X -= X.mean(0)[None, :]
-            Y -= Y.mean(0)[None, :]
-            X /= X.std(0)[None, :] + X.std() * 0.1
-            Y /= Y.std(0)[None, :] + Y.std() * 0.1
-        
+        # if self.normalize_data:
+        #     X -= X.mean(0)[None, :]
+        #     Y -= Y.mean(0)[None, :]
+        #     X /= X.std(0)[None, :] + X.std() * 0.1
+        #     Y /= Y.std(0)[None, :] + Y.std() * 0.1
+
+        # x = tf.placeholder(tf.float32, [1,dim])
+        # y = tf.placeholder(tf.float32, [1,dim])
+
         x = tf.placeholder(tf.float32, [None, dim])
         y = tf.placeholder(tf.float32, [None, dim])
-        
+
+
         Wxf = tf.Variable(self.Wxf_np)
         Wyf = tf.Variable(self.Wyf_np)
         Whf = tf.Variable(self.Whf_np)
         Whf_in = tf.Variable(self.Whf_in_np)
         bmap = tf.Variable(self.bmap_np)
-        
+        Wtf=tf.Variable(self.Wtf_np)
+        bt=tf.Variable(self.bt_np)
+
         fx = tf.matmul(x, Wxf)
         fy = tf.matmul(y, Wyf)
         mappings = tf.sigmoid(tf.matmul(tf.multiply(fx , fy), 
                                         tf.transpose(Whf_in)) + bmap)
         fH = tf.matmul(mappings, Whf)
+        T = tf.sigmoid(tf.matmul(mappings, Wtf) + bt)
+
+
+
         
         with tf.Session() as sess:
             init = tf.global_variables_initializer()
             sess.run(init)
-            sess.run(fH, feed_dict={x: X, y: Y})
+            out=sess.run(T, feed_dict={x: X, y: Y})
             
             print('export')
-            H = np.array(fH.eval())
+            #H = np.array(fH.eval())
+            #out = T.eval()
+            #print('aaaaaaaaaaaaaaaaaa',out)
+            return out
         
-    def train(self, X, Y,
+    def train(self, X, Y, L,
               epochs=150,
-              batch_size=1000,
+              batch_size=1,
               print_debug=True):
         """ train the factored autoencoder
         X: x-input
@@ -136,6 +159,7 @@ class FactoredGatedAutoencoder:
         eps_map = self.eps_map
         
         n, dim = X.shape
+
         assert(dim == Y.shape[1])
         
         numpy_rng = np.random.RandomState(1)
@@ -148,7 +172,8 @@ class FactoredGatedAutoencoder:
         
         x = tf.placeholder(tf.float32, [None, dim])
         y = tf.placeholder(tf.float32, [None, dim])
-        
+        l=  tf.placeholder(tf.float32, [None,1])
+
         Wxf = tf.Variable(tf.random_normal(shape=(dim, F)) * 0.01)
         Wyf = tf.Variable(tf.random_normal(shape=(dim, F)) * 0.01)
         
@@ -174,20 +199,37 @@ class FactoredGatedAutoencoder:
         
         mappings = tf.sigmoid(tf.matmul(tf.multiply(fx , fy), 
                                         tf.transpose(Whf_in)) + bmap)
+
+        #### Add discriminative layer
+        Wtf = tf.Variable(tf.random_normal(shape=(H,1)) * 0.01)
+        bt = tf.Variable(np.zeros(1, dtype='float32'), name='bt')
+        T= tf.sigmoid(tf.matmul(mappings,Wtf)+bt)
+
+        ####
+
         fH = tf.matmul(mappings, Whf)
         
         ox = tf.matmul(tf.multiply(fy , fH),tf.transpose(Wxf)) + bx
         oy = tf.matmul(tf.multiply(fx , fH),tf.transpose(Wyf)) + by
-        
-        cost = tf.nn.l2_loss(ox-x) + tf.nn.l2_loss(oy-y)
-        
+
+
+
+        cost_gen = tf.nn.l2_loss(ox-x) + tf.nn.l2_loss(oy-y)
+        # Add descriminative loss
+        cost_desc= tf.nn.l2_loss(T-l)
+
+        # Define the hybrid cost
+
+        cost = cost_gen + 0.4* cost_desc
         optimizer = tf.train.AdamOptimizer(learning_rate=lr).minimize(cost)
         
         norm_Wxf = tf.nn.l2_normalize(Wxf, [0,1], epsilon=1e-12, name=None)
         norm_Wyf = tf.nn.l2_normalize(Wyf, [0,1], epsilon=1e-12, name=None)
+        norm_Wtf = tf.nn.l2_normalize(Wtf, [0, 1], epsilon=1e-12, name=None)
 
         Wxf_normalize = Wxf.assign(norm_Wxf)
         Wyf_normalize = Wxf.assign(norm_Wyf)
+        Wtf_normalize = Wtf.assign(norm_Wtf)
         
         with tf.Session() as sess:
             init = tf.global_variables_initializer()
@@ -199,12 +241,14 @@ class FactoredGatedAutoencoder:
                     randidx = np.random.randint(
                         n, size=batch_size).astype('int32')
                     batch_xs = X[randidx]
-                    batch_ys = Y[randidx]  
-                    sess.run(optimizer, feed_dict={x: batch_xs, y: batch_ys})
+                    batch_ys = Y[randidx]
+                    label = L[randidx]
+                    sess.run(optimizer, feed_dict={x: batch_xs, y: batch_ys, l:label})
                     sess.run(Wxf_normalize)
                     sess.run(Wyf_normalize)
+                    sess.run(Wtf_normalize)
 
-                cost_ = sess.run(cost, feed_dict={x: X, y: Y}) / n
+                cost_ = sess.run(cost, feed_dict={x: X, y: Y, l: L }) / n
                 if print_debug:
                     print ("Epoch: %03d/%03d cost: %.9f" %\
                            (epoch,epochs ,cost_) )
@@ -225,6 +269,10 @@ class FactoredGatedAutoencoder:
             self.bmap_np = np.array(bmap.eval(sess))
             self.bx_np = np.array(bx.eval(sess))
             self.by_np = np.array(by.eval(sess))
+            self.Wtf_np= np.array(Wtf.eval(sess))
+            self.bt_np=np.array(bt.eval(sess))
+
+
             self.is_trained = True
             
         
