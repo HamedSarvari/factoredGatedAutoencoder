@@ -1,19 +1,17 @@
-import numpy as np
+import numpy as np 
 import matplotlib.pyplot as plt
 import pylab
 import sys
 import pandas as pd
 import tensorflow as tf
 from gatedAutoencoder import FactoredGatedAutoencoder
+from Generate_input import *
 from utils import plot_mats
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
-
 sys.path.insert(0, './')
-from Generate_input import *
 ########################################################################################################################
 # Import random dots dataset
-
 # X = np.load('./shiftsuniform_x.npy').astype('float32')
 # Y = np.load('./shiftsuniform_y.npy').astype('float32')
 #L=np.ones(X.shape[0])
@@ -43,21 +41,6 @@ model = FactoredGatedAutoencoder(
 ##########################
 # Inference
 ##########################
-# print('aa',X.mean(0)[None, :].shape)
-
-# X1=X[2].reshape(13,13)
-# Y1=Y[2].reshape(13,13)
-#
-# print(X1)
-# # print(Y[1])
-#
-# plt.imshow(X1)
-# plt.show()
-#
-# plt.imshow(Y1)
-# plt.show()
-#
-
 
 def Inference_with_inliers(dataset, output_file):
 

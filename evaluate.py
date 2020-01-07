@@ -16,3 +16,4 @@ scores_updated= 1-scores_mean
 
 data_dic, labels_dic = data_init('WPBC')
 print(eval_model(scores_updated,labels_dic))
+
