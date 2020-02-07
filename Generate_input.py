@@ -7,22 +7,7 @@ import random
 from gatedAutoencoder import FactoredGatedAutoencoder
 import sys
 
-###########################################################################################################################
 
-def Read_data(dataset, type= 'arff'):
-    if type == 'arff':
-        address = './DataSets/' + dataset + '.arff'
-        #address='/home/hamed/PycharmProjects/DeepEnsembles/DataSets/' + dataset + '.arff'
-
-        data, meta = arff.loadarff(address)
-        data = pd.DataFrame(data)
-        if 'id' in data.columns:
-            data = data.drop(labels='id', axis=1)
-        labels = list(data['outlier'])
-        data = data.drop(labels='outlier', axis=1)
-        data=check_data_modify(data)
-
-    return data,labels
 ###########################################################################################################################
 def data_init(dataset):
 
@@ -32,7 +17,7 @@ def data_init(dataset):
     data_dic = data_to_dic(data)
     labels_dic = data_to_dic(label)
 
-    return  data_dic,labels_dic
+    return data_dic,labels_dic
 
 def generate_pairs(data_dic, labels_dic, GT_prcnt):
 
@@ -40,21 +25,24 @@ def generate_pairs(data_dic, labels_dic, GT_prcnt):
     outlier_inds = [i for i, x in enumerate(labels_dic.values()) if x == "yes"]
     inlier_inds = [i for i, x in enumerate(labels_dic.values()) if x == "no"]
 
-    random_outlier_inds = random.sample(outlier_inds, int(GT_prcnt* len(outlier_inds)))
+    print('number of outliers=', len(outlier_inds))
+    random_outlier_inds = random.sample(outlier_inds, int(np.ceil(GT_prcnt*len(outlier_inds))))
+    print('number of selected=', len(random_outlier_inds))
+    print('selected outliers', random_outlier_inds, len(random_outlier_inds))
+    random_inlier_inds = random.sample(inlier_inds, int(GT_prcnt * len(inlier_inds)))
+    print('selected inliers', len(random_inlier_inds))
+
     unlabeled_outlier_inds = [i for i in outlier_inds if i not in random_outlier_inds]
+    unlabeled_inlier_inds = [i for i in inlier_inds if i not in random_inlier_inds]
 
-    print('lableed', random_outlier_inds, len(random_outlier_inds),len(outlier_inds))
-    print('unlableed',unlabeled_outlier_inds,len(unlabeled_outlier_inds))
-
-    inlier_pairs = list(itertools.combinations(inlier_inds, 2))
-    outlier_inlier_pairs = [(a, b) for a in random_outlier_inds for b in inlier_inds if a != b]
-
+    outlier_inlier_pairs = [(a, b) for a in random_outlier_inds for b in random_inlier_inds if a != b]
+    inlier_inlier_pairs =  [(a, b) for a in random_inlier_inds for b in random_inlier_inds if a != b]
 
     List_X = []
     List_Y = []
     List_labels = []
 
-    for element in inlier_pairs:
+    for element in inlier_inlier_pairs:
         List_X.append(data_dic[element[0]])
         List_Y.append(data_dic[element[1]])
         List_labels.append(1)
@@ -70,33 +58,5 @@ def generate_pairs(data_dic, labels_dic, GT_prcnt):
     L = np.matrix(List_labels)
     L = L.transpose()
 
-    return X,Y,L, unlabeled_outlier_inds
+    return X,Y,L, unlabeled_inlier_inds, unlabeled_outlier_inds
 ###########################################################################################################################
-
-# def pair_with_inliers(data_dic, labels_dic, unlabeled_ind):
-#
-#     inlier_inds = [i for i, x in enumerate(labels_dic.values()) if x == "no"]
-#     print('inlier',inlier_inds)
-#     unlabeled_inlier_pairs = [(a, b) for a in [unlabeled_ind] for b in inlier_inds]
-#     List_X = []
-#     List_Y = []
-#
-#     for element in unlabeled_inlier_pairs:
-#
-#         unlabeled_inlier_pairs = [(a, b) for a in [unlabeled_ind] for b in inlier_inds]
-#         List_X = []
-#         List_Y = []
-#
-#         for element in unlabeled_inlier_pairs:
-#             List_X.append(data_dic[element[0]])
-#             List_Y.append(data_dic[element[1]])
-#         X = np.array(List_X)
-#         Y = np.array(List_Y)
-#
-#         List_X.append(data_dic[element[0]])
-#         List_Y.append(data_dic[element[1]])
-#     X = np.array(List_X)
-#     Y = np.array(List_Y)
-#
-#     return X,Y
-

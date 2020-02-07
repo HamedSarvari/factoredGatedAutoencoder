@@ -327,6 +327,8 @@ def Read_data(dataset, type= 'arff', normalization='minmax'):
         if 'id' in data.columns:
             data = data.drop(labels='id', axis=1)
         labels = list(data['outlier'])
+        # Converting bytes to utf
+        labels = [x.decode('utf-8') for x in labels]
         data = data.drop(labels='outlier', axis=1)
         data=check_data_modify(data)
 
