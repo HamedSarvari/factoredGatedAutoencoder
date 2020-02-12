@@ -20,6 +20,8 @@ def Inference_with_inliers(dataset, output_file, model):
         # print('number of data points', len(data_dic.keys()))
 
         with open(output_file, mode='a') as csvfile:
+
+            file_writer = csv.writer(csvfile, delimiter=',')
             for ind in data_dic.keys():
                 print(ind)
                 test_inlier_pairs = [(a, b) for a in [ind] for b in iter_inds]
@@ -33,8 +35,6 @@ def Inference_with_inliers(dataset, output_file, model):
 
                 X = np.array(List_X)
                 Y = np.array(List_Y)
-
-                file_writer = csv.writer(csvfile, delimiter=',')
                 file_writer.writerow(model.inference(X, Y).flatten())
 
 
