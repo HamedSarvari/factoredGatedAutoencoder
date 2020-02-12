@@ -61,6 +61,7 @@ def train_infer(dataset, fac_num, hid_num, out_file,GT_prcnt=0.2, train=True, in
 ########################################################################################################################
 # Galss, shuttle, wilt
 dataset = 'Glass'
+
 out_file=  dataset + "_Inference_scores"
 train_infer(dataset,3,3,out_file,GT_prcnt=0.1,train=False, infer=True)
 
