@@ -6,11 +6,13 @@ import os
 import csv
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 sys.path.insert(0, './')
-
+CUDA_VISIBLE_DEVICES=1
 ########################################################################################################################
 
 def Inference_with_inliers(dataset, output_file, model):
+
     #with tf.device('/job:localhost/replica:0/task:0/device:XLA_GPU:0 '):
+    with tf.device('/gpu:0'):
 
     data_dic, labels_dic = data_init(dataset)
     # inlier_inds = [i for i, x in enumerate(labels_dic.values()) if x == "no"]
