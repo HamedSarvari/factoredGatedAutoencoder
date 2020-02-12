@@ -13,30 +13,30 @@ def Inference_with_inliers(dataset, output_file, model):
 
     #with tf.device('/job:localhost/replica:0/task:0/device:XLA_GPU:0 '):
     with tf.device('/gpu:0'):
+        data_dic, labels_dic = data_init(dataset)
+        # inlier_inds = [i for i, x in enumerate(labels_dic.values()) if x == "no"]
+        iter_inds = data_dic.keys()
+        # print('number of inliers', len(inlier_inds))
+        # print('number of data points', len(data_dic.keys()))
 
-    data_dic, labels_dic = data_init(dataset)
-    # inlier_inds = [i for i, x in enumerate(labels_dic.values()) if x == "no"]
-    iter_inds = data_dic.keys()
-    # print('number of inliers', len(inlier_inds))
-    # print('number of data points', len(data_dic.keys()))
+        with open(output_file, mode='a') as csvfile:
+            for ind in data_dic.keys():
+                print(ind)
+                test_inlier_pairs = [(a, b) for a in [ind] for b in iter_inds]
 
-    with open(output_file, mode='a') as csvfile:
-        for ind in data_dic.keys():
-            print(ind)
-            test_inlier_pairs = [(a, b) for a in [ind] for b in iter_inds]
+                List_X = []
+                List_Y = []
 
-            List_X = []
-            List_Y = []
+                for element in test_inlier_pairs:
+                    List_X.append(data_dic[element[0]])
+                    List_Y.append(data_dic[element[1]])
 
-            for element in test_inlier_pairs:
-                List_X.append(data_dic[element[0]])
-                List_Y.append(data_dic[element[1]])
+                X = np.array(List_X)
+                Y = np.array(List_Y)
 
-            X = np.array(List_X)
-            Y = np.array(List_Y)
+                file_writer = csv.writer(csvfile, delimiter=',')
+                file_writer.writerow(model.inference(X, Y).flatten())
 
-            file_writer = csv.writer(csvfile, delimiter=',')
-            file_writer.writerow(model.inference(X, Y).flatten())
 
 
 ########################################################################################################################
