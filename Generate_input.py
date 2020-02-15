@@ -17,7 +17,8 @@ def data_init(dataset):
     data_dic = data_to_dic(data)
     labels_dic = data_to_dic(label)
 
-    return data_dic,labels_dic
+    data_np = data
+    return data_dic,labels_dic, data_np
 
 def generate_pairs(data_dic, labels_dic, GT_prcnt):
 

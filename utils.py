@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
-from PIL import Image
+#from PIL import Image
 import numpy as np
 from os import listdir
 
