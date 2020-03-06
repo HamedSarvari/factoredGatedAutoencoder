@@ -46,8 +46,8 @@ def Gen_2_gaussians(mu1, mu2, sigma, dim, size):
 
 def generate_pairs_two_gauss(mu1, mu2, sigma, dim, size, GT_prcnt):
 
-    dataset, labels, class_labels = Gen_2_gaussians(mu1, mu2, sigma, dim, size)
-    IDs = np.array(range(dataset.shape[0]))
+    data, labels, class_labels = Gen_2_gaussians(mu1, mu2, sigma, dim, size)
+    IDs = np.array(range(data.shape[0]))
     outlier_inds = IDs[labels == 1]
     inlier_inds = IDs[labels == 0]
 
@@ -71,18 +71,22 @@ def generate_pairs_two_gauss(mu1, mu2, sigma, dim, size, GT_prcnt):
     inlier_inlier_pairs = [(a, b) for a in random_inlier_inds for b in random_inlier_inds if a != b and
                            class_labels[a] == class_labels[b]]
 
+
+    print(len(inlier_inlier_pairs),'in-in')
+    print(len(outlier_inlier_pairs), 'out-in')
+
     List_X = []
     List_Y = []
     List_labels = []
 
     for element in inlier_inlier_pairs:
-        List_X.append(dataset[element[0],:])
-        List_Y.append(dataset[element[1],:])
+        List_X.append(data[element[0],:])
+        List_Y.append(data[element[1],:])
         List_labels.append(1)
 
     for element in outlier_inlier_pairs:
-        List_X.append(dataset[element[0], :])
-        List_Y.append(dataset[element[1], :])
+        List_X.append(data[element[0], :])
+        List_Y.append(data[element[1], :])
         List_labels.append(0)
 
 
