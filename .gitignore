@@ -4,6 +4,8 @@ __pycache__/
 *$py.class
 *.npy
 *_Inference*
+
+
 # C extensions
 *.so
 
@@ -26,6 +28,8 @@ wheels/
 .installed.cfg
 *.egg
 DataSets/
+Weights/
+results/
 # PyInstaller
 #  Usually these files are written by a python script from a template
 #  before PyInstaller builds the exe, so as to inject date/other infos into it.

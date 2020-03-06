@@ -71,7 +71,6 @@ class custom_autoencoder(nn.Module):
 
 
         self.encoder = add_layer_custom(self.encoder_dims,self.encoder_acts, self.selection_prob)
-        #@TODO remove prob
         self.decoder= add_layer_custom(self.decoder_dims,self.decoder_acts,self.selection_prob)
 
 

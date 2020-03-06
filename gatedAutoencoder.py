@@ -130,8 +130,6 @@ class FactoredGatedAutoencoder:
         T = tf.sigmoid(tf.matmul(mappings, Wtf) + bt)
 
 
-
-        
         with tf.Session() as sess:
             init = tf.global_variables_initializer()
             sess.run(init)
@@ -140,7 +138,7 @@ class FactoredGatedAutoencoder:
             print('export')
             #H = np.array(fH.eval())
             #out = T.eval()
-            #print('aaaaaaaaaaaaaaaaaa',out)
+
             return out
         
     def train(self, X, Y, L,

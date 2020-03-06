@@ -1,14 +1,13 @@
-import pandas as pd
-import numpy as np
-from scipy.io import arff
+#import pandas as pd
+#import numpy as np
+#from scipy.io import arff
 from Autoencoder_utils_torch import *
-import itertools
+#import itertools
 import random
-from gatedAutoencoder import FactoredGatedAutoencoder
-import sys
+#from gatedAutoencoder import FactoredGatedAutoencoder
+#import sys
 
-
-###########################################################################################################################
+########################################################################################################################
 def data_init(dataset):
 
     data, label = Read_data(dataset)
@@ -19,9 +18,9 @@ def data_init(dataset):
 
     data_np = data
     return data_dic,labels_dic, data_np
+#######################################################################################################################
 
 def generate_pairs(data_dic, labels_dic, GT_prcnt):
-
 
     outlier_inds = [i for i, x in enumerate(labels_dic.values()) if x == "yes"]
     inlier_inds = [i for i, x in enumerate(labels_dic.values()) if x == "no"]
@@ -37,7 +36,7 @@ def generate_pairs(data_dic, labels_dic, GT_prcnt):
     unlabeled_inlier_inds = [i for i in inlier_inds if i not in random_inlier_inds]
 
     outlier_inlier_pairs = [(a, b) for a in random_outlier_inds for b in random_inlier_inds if a != b]
-    inlier_inlier_pairs =  [(a, b) for a in random_inlier_inds for b in random_inlier_inds if a != b]
+    inlier_inlier_pairs = [(a, b) for a in random_inlier_inds for b in random_inlier_inds if a != b]
 
     List_X = []
     List_Y = []
