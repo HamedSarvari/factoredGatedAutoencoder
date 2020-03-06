@@ -29,8 +29,8 @@ def Inference_with_inliers(dataset, model, start_ind, end_ind, mu1, mu2, sigma, 
             for ind in range(start_ind, end_ind):
                 print(ind)
                 size = data.shape[0]
-                X = np.array([list(data_dic[ind])]*size)
-                Y = data_np
+                X = np.array([list(data[ind,:])]*size)
+                Y = data
                 file_writer.writerow(model.inference(X, Y).flatten())
                 del X
                 del Y
@@ -38,7 +38,7 @@ def Inference_with_inliers(dataset, model, start_ind, end_ind, mu1, mu2, sigma, 
 ########################################################################################################################
 
 def train_infer_two_gauss(dataset,fac_num, hid_num, start_ind , end_ind ,mu1=0, mu2=5, sigma=1, dim=7, size=2500, GT_prcnt=0.1,
-                          ep_num=30, train=True, infer=True):
+                          ep_num=1, train=True, infer=True):
 
 
     X, Y, L, unlabeled_inlier_inds, unlabeled_outlier_inds = generate_pairs_two_gauss(mu1, mu2, sigma, dim, size, GT_prcnt)
