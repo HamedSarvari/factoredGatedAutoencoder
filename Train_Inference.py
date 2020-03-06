@@ -1,5 +1,5 @@
 from gatedAutoencoder import FactoredGatedAutoencoder
-from Generate_input import *
+from create_toy_dataset import *
 from utils import plot_mats
 import tensorflow as tf
 import os
@@ -39,9 +39,13 @@ def Inference_with_inliers(dataset, model, start_ind, end_ind):
 
 ########################################################################################################################
 
-def train_infer(dataset, fac_num, hid_num, start_ind , end_ind ,GT_prcnt=0.2, train=True, infer=True):
-    data_dic, labels_dic, data_np = data_init(dataset)
-    X, Y, L, unlabeled_inlier_inds, unlabeled_outlier_inds = generate_pairs(data_dic, labels_dic, GT_prcnt)
+def train_infer_two_gauss(dataset,fac_num, hid_num, start_ind , end_ind ,mu1=0, mu2=5, sigma=1, dim=7, size=2500, GT_prcnt=0.1,
+                          ep_num=30,train=True, infer=True):
+
+
+    X, Y, L, unlabeled_inlier_inds, unlabeled_outlier_inds = generate_pairs_two_gauss(mu1, mu2, sigma, dim, size, GT_prcnt)
+
+
     print(X.shape, Y.shape, L.shape)
     # if end ind is not specified iterate to the very last index
     if end_ind is None:
@@ -53,7 +57,7 @@ def train_infer(dataset, fac_num, hid_num, start_ind , end_ind ,GT_prcnt=0.2, tr
         numHidden=hid_num,
         corrutionLevel=0.0)
     if train:
-        model.train(X, Y, L, epochs=3, batch_size=1, print_debug=True)
+        model.train(X, Y, L, epochs= ep_num, batch_size=1, print_debug=True)
         model.save('./Weights/' + dataset + '_')
 
     if infer:
@@ -61,13 +65,20 @@ def train_infer(dataset, fac_num, hid_num, start_ind , end_ind ,GT_prcnt=0.2, tr
         Inference_with_inliers(dataset, model, start_ind, end_ind)
 
 ########################################################################################################################
-# Galss, shuttle, wilt
-dataset = 'Wilt'
-start_index = 200
-end_index = None
+mu1 = 0
+mu2 = 5
+sigma = 1
+dim = 7
+size = 2500
+GT_prcnt=0.1
+########################################################################################################################
 
+start_index = 0
+end_index = 100
 
-train_infer(dataset,fac_num=3,hid_num=3, start_ind = start_index, end_ind= end_index,
-            GT_prcnt=0.1, train=False, infer=True)
+dataset = 'TwoGauss'
+
+train_infer_two_gauss(dataset, fac_num=3, hid_num=3, start_ind = start_index, end_ind= end_index,
+            GT_prcnt=0.1, train=True, infer=True)
 
 # datasets=['WPBC','Glass','Lympho','SatImage','PageBlocks','WDBC','Yeast05679v4','Wilt','Stamps','Pima','Ecoli4','SpamBase']

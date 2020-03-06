@@ -51,9 +51,6 @@ def generate_pairs_two_gauss(mu1, mu2, sigma, dim, size, GT_prcnt):
     outlier_inds = IDs[labels == 1]
     inlier_inds = IDs[labels == 0]
 
-    print(IDs[labels == 1])
-    print(labels == 1)
-
     # outlier_inds = labelslabels == 1
     print('number of outliers=', len(outlier_inds))
 
@@ -79,14 +76,15 @@ def generate_pairs_two_gauss(mu1, mu2, sigma, dim, size, GT_prcnt):
     List_labels = []
 
     for element in inlier_inlier_pairs:
-        List_X.append(data_dic[element[0]])
-        List_Y.append(data_dic[element[1]])
+        List_X.append(dataset[element[0],:])
+        List_Y.append(dataset[element[1],:])
         List_labels.append(1)
 
     for element in outlier_inlier_pairs:
-        List_X.append(data_dic[element[0]])
-        List_Y.append(data_dic[element[1]])
+        List_X.append(dataset[element[0], :])
+        List_Y.append(dataset[element[1], :])
         List_labels.append(0)
+
 
     X = np.array(List_X)
     Y = np.array(List_Y)
@@ -97,10 +95,4 @@ def generate_pairs_two_gauss(mu1, mu2, sigma, dim, size, GT_prcnt):
     return X,Y,L, unlabeled_inlier_inds, unlabeled_outlier_inds
 
 ########################################################################################################################
-mu1 = 0
-mu2 = 5
-sigma = 1
-dim = 7
-size = 2500
-GT_prcnt=0.1
 
