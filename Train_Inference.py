@@ -47,7 +47,8 @@ def train_infer_two_gauss(dataset,fac_num, hid_num, start_ind , end_ind ,mu1=0, 
     print(X.shape, Y.shape, L.shape)
     # if end ind is not specified iterate to the very last index
     if end_ind is None:
-        end_ind = len(data_dic.keys())
+        # Two gaussians so number of data points is size * 2
+        end_ind = size * 2
     print('end ind', end_ind)
 
     model = FactoredGatedAutoencoder(
@@ -71,12 +72,12 @@ size = 2500
 GT_prcnt = 0.1
 ########################################################################################################################
 
-start_index = 0
-end_index = 100
+start_index = 4500
+end_index = None
 
 dataset = 'TwoGauss'
 
 train_infer_two_gauss(dataset, fac_num=3, hid_num=3, start_ind = start_index, end_ind= end_index,
-            GT_prcnt=0.1, train=True, infer=True)
+            GT_prcnt= 0.1, train=False, infer=True)
 
 # datasets=['WPBC','Glass','Lympho','SatImage','PageBlocks','WDBC','Yeast05679v4','Wilt','Stamps','Pima','Ecoli4','SpamBase']
