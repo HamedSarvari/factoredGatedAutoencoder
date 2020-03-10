@@ -47,9 +47,9 @@ def Gen_2_gaussians(mu1, mu2, sigma, dim, size):
 ########################################################################################################################
 
 
-def generate_pairs_two_gauss(data_file, GT_prcnt):
+def generate_pairs_two_gauss(data_name, GT_prcnt):
 
-    loaded_data = load_obj(data_file)
+    loaded_data = load_obj(data_name)
     data = loaded_data['data']
     labels = loaded_data ['labels']
     class_labels = loaded_data ['class_labels']
@@ -106,21 +106,21 @@ def generate_pairs_two_gauss(data_file, GT_prcnt):
     return X,Y,L, unlabeled_inlier_inds, unlabeled_outlier_inds
 
 ########################################################################################################################
-
-mu1 = 0
-mu2 = 5
-sigma = 1
-dim = 7
-size = 2500
-GT_prcnt = 0.1
-
-data, labels, class_labels = Gen_2_gaussians(mu1, mu2, sigma, dim, size)
-data_dic = {}
-data_dic['data'] = data
-data_dic['labels'] = labels
-data_dic['class_labels'] = class_labels
-
-save_obj(data_dic,'TwoGauss_data_7dim')
+#
+# mu1 = 0
+# mu2 = 5
+# sigma = 1
+# dim = 7
+# size = 2500
+# GT_prcnt = 0.1
+#
+# data, labels, class_labels = Gen_2_gaussians(mu1, mu2, sigma, dim, size)
+# data_dic = {}
+# data_dic['data'] = data
+# data_dic['labels'] = labels
+# data_dic['class_labels'] = class_labels
+#
+# save_obj(data_dic,'TwoGauss_data_7dim')
 
 #loaded_data = load_obj('TwoGauss_data')
 

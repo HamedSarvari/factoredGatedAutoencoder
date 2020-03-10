@@ -12,16 +12,17 @@ CUDA_VISIBLE_DEVICES=1
 
 ########################################################################################################################
 
-def Inference_with_inliers(dataset, model, start_ind, end_ind, mu1, mu2, sigma, dim, size):
+def Inference_with_inliers(data_name, model, start_ind, end_ind):
 
     #with tf.device('/job:localhost/replica:0/task:0/device:XLA_GPU:0 '):
     #with tf.device('/gpu:0'):
 
-        dataset='TwoGauss'
-        data, labels, class_labels = Gen_2_gaussians(mu1, mu2, sigma, dim, size)
+        loaded_data = load_obj(data_name)
+        data = loaded_data['data']
+        labels = loaded_data['labels']
+        class_labels = loaded_data['class_labels']
 
-
-        output_file = './results/' + dataset + "_Inference_scores_" + str(start_ind) + '_to_' + str(end_ind) + '.csv'
+        output_file = './results/' + data_name + "_Inference_scores_" + str(start_ind) + '_to_' + str(end_ind) + '.csv'
 
         with open(output_file, mode='a') as csvfile:
 
@@ -37,11 +38,10 @@ def Inference_with_inliers(dataset, model, start_ind, end_ind, mu1, mu2, sigma, 
 
 ########################################################################################################################
 
-def train_infer_two_gauss(data_file, fac_num, hid_num, start_ind , end_ind , GT_prcnt=0.1,
-                          ep_num=1, train=True, infer=True):
+def train_infer_two_gauss(data_name, fac_num, hid_num, start_ind , end_ind , GT_prcnt=0.1,
+                          ep_num= 10, train=True, infer=True):
 
-
-    X, Y, L, unlabeled_inlier_inds, unlabeled_outlier_inds = generate_pairs_two_gauss(data_file, GT_prcnt)
+    X, Y, L, unlabeled_inlier_inds, unlabeled_outlier_inds = generate_pairs_two_gauss(data_name, GT_prcnt)
     print(X.shape, Y.shape, L.shape)
     # if end ind is not specified iterate to the very last index
     if end_ind is None:
@@ -59,7 +59,7 @@ def train_infer_two_gauss(data_file, fac_num, hid_num, start_ind , end_ind , GT_
 
     if infer:
         model.load_from_weights('./Weights/' + dataset + '_')
-        Inference_with_inliers(dataset, model, start_ind, end_ind, mu1, mu2, sigma, dim, size)
+        Inference_with_inliers('TwoGauss_data_7dim', model, start_ind, end_ind)
 
 ########################################################################################################################
 mu1 = 0
@@ -70,12 +70,12 @@ size = 2500
 GT_prcnt = 0.1
 ########################################################################################################################
 
-start_index = 4500
-end_index = None
+start_index = 0
+end_index = 1000
 
 dataset = 'TwoGauss'
 
 train_infer_two_gauss('TwoGauss_data_7dim', fac_num=3, hid_num=3, start_ind = start_index, end_ind= end_index,
-            GT_prcnt= 0.1, train=True, infer=True)
+            GT_prcnt= 0.1, train=True, infer=False)
 
 # datasets=['WPBC','Glass','Lympho','SatImage','PageBlocks','WDBC','Yeast05679v4','Wilt','Stamps','Pima','Ecoli4','SpamBase']
