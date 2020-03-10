@@ -47,9 +47,13 @@ def Gen_2_gaussians(mu1, mu2, sigma, dim, size):
 ########################################################################################################################
 
 
-def generate_pairs_two_gauss(mu1, mu2, sigma, dim, size, GT_prcnt):
+def generate_pairs_two_gauss(data_file, GT_prcnt):
 
-    data, labels, class_labels = Gen_2_gaussians(mu1, mu2, sigma, dim, size)
+    loaded_data = load_obj(data_file)
+    data = loaded_data['data']
+    labels = loaded_data ['labels']
+    class_labels = loaded_data ['class_labels']
+
     IDs = np.array(range(data.shape[0]))
     outlier_inds = IDs[labels == 1]
     inlier_inds = IDs[labels == 0]
@@ -116,7 +120,8 @@ data_dic['data'] = data
 data_dic['labels'] = labels
 data_dic['class_labels'] = class_labels
 
-save_obj(data_dic,'TwoGauss_data')
-loaded_data = load_obj('TwoGauss_data')
+save_obj(data_dic,'TwoGauss_data_7dim')
 
-print(loaded_data['data'])
+#loaded_data = load_obj('TwoGauss_data')
+
+#print(loaded_data['data'])
