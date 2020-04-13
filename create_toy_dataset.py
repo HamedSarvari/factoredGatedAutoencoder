@@ -94,7 +94,7 @@ def generate_pairs_two_gauss(data_name, GT_prcnt):
     List_Y = []
     List_labels = []
 
-    for element in inlier_inlier_pairs:
+    for element in inlier_inlier_pairs :
         List_X.append(data[element[0],:])
         List_Y.append(data[element[1],:])
         List_labels.append(1)
