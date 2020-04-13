@@ -1,11 +1,25 @@
+# This scripts takes a dataset name and concatenates the processed data
+# The dataset has been split into chunks for parallel computation
+# Starting indices of chunks are passed as the second argument of the concat function
+###########################################################################################################################
 import pandas as pd
 import numpy as np
 from Generate_input import *
+from universal_utils import *
+from sklearn.metrics import average_precision_score
+###########################################################################################################################
+data_name = 'TwoGauss_data_7dim'
+loaded_data = load_obj(data_name)
+data = loaded_data['data']
+labels = loaded_data['labels']
+class_labels = loaded_data['class_labels']
+###########################################################################################################################
 
 def eval_model(scores, labels_dic):
     y_true = np.array(list(labels_dic.values()))
     y_true = (y_true == 'yes') + 0
     return average_precision_score(y_true,scores)
+###########################################################################################################################
 
 def concat_files(dataset, start_inds):
 
@@ -30,16 +44,19 @@ def concat_files(dataset, start_inds):
 
     return final_mat
 
-
-scores = concat_files('Glass', start_inds= [0,100,150,200,214])
+###########################################################################################################################
+scores = concat_files('TwoGauss_data_7dim', start_inds= [0,1000,2000,3000,4000,5000])
 
 print('scores shape', scores.shape)
-scores_mean= np.max(scores,axis=1)
-scores_updated= 1-scores_mean
+scores_mean= np.mean(scores,axis=1)
+scores_updated = 1- scores_mean
+print(len(scores_updated))
 
+print(average_precision_score(labels, scores_updated))
 #
-data_dic, labels_dic, data_np = data_init('Glass')
-print(len(labels_dic.values()))
-print(eval_model(scores_updated,labels_dic))
+# data_dic, labels_dic, data_np = data_init('Glass')
+# print(len(labels_dic.values()))
+# print(eval_model(scores_updated,labels_dic))
 
+###########################################################################################################################
 

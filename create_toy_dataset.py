@@ -2,6 +2,7 @@ import numpy as np
 import random
 import pickle
 from universal_utils import *
+
 ########################################################################################################################
 # generates as many as size, 'dim' dimensional guassian points with mean mu and sd sigma.
 # Returns a matrix with generated points
@@ -23,7 +24,7 @@ def check_outlierness(dataset, mu, threshold):
 
     # Find points that are more than threshold away from the mean in 70 percent of the features
     outliers = np.array([sum(np.array(np.abs(dataset[ind, :] - mu)) > threshold) > int(0.7*dim) for ind in range(dataset.shape[0])])
-    labels = outliers+0
+    labels = outliers + 0
 
     return labels
 ########################################################################################################################
@@ -45,7 +46,6 @@ def Gen_2_gaussians(mu1, mu2, sigma, dim, size):
     return dataset, labels, class_labels
 
 ########################################################################################################################
-
 
 def generate_pairs_two_gauss(data_name, GT_prcnt):
 
@@ -71,6 +71,14 @@ def generate_pairs_two_gauss(data_name, GT_prcnt):
     unlabeled_outlier_inds = [i for i in outlier_inds if i not in random_outlier_inds]
     unlabeled_inlier_inds = [i for i in inlier_inds if i not in random_inlier_inds]
 
+    ######################### Save the information about labels  ################################
+    labels_info = {}
+    labels_info['random_outlier_inds'] = random_outlier_inds
+    labels_info['random_inlier_inds'] = random_inlier_inds
+    labels_info['unlabeled_outlier_inds'] = unlabeled_outlier_inds
+    labels_info['unlabeled_inlier_inds'] = unlabeled_inlier_inds
+    save_obj(labels_info, data_name + '_labels')
+    #############################################################################################
 
     outlier_inlier_pairs = [(a, b) for a in random_outlier_inds for b in random_inlier_inds if a != b] + \
                            [(a, b) for b in random_outlier_inds for a in random_inlier_inds if a != b]
@@ -120,7 +128,7 @@ def generate_pairs_two_gauss(data_name, GT_prcnt):
 # data_dic['labels'] = labels
 # data_dic['class_labels'] = class_labels
 #
-# save_obj(data_dic,'TwoGauss_data_7dim')
+save_obj(data_dic,'TwoGauss_data_7dim')
 
 #loaded_data = load_obj('TwoGauss_data')
 
