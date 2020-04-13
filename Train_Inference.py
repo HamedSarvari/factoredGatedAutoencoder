@@ -30,7 +30,9 @@ def Inference_with_inliers(data_name, model, start_ind, end_ind):
             for ind in range(start_ind, end_ind):
                 print(ind)
                 size = data.shape[0]
+                print('row',data[ind,:])
                 X = np.array([list(data[ind,:])]*size)
+                print('X',X)
                 Y = data
                 file_writer.writerow(model.inference(X, Y).flatten())
                 del X
@@ -40,10 +42,6 @@ def Inference_with_inliers(data_name, model, start_ind, end_ind):
 
 def train_infer_two_gauss(data_name, fac_num, hid_num, start_ind , end_ind , GT_prcnt=0.1,
                           ep_num= 10, train=True, infer=True):
-
-    X, Y, L, unlabeled_inlier_inds, unlabeled_outlier_inds = generate_pairs_two_gauss(data_name, GT_prcnt)
-    print(X.shape, Y.shape, L.shape)
-    # if end ind is not specified iterate to the very last index
     if end_ind is None:
         # Two gaussians so number of data points is size * 2
         end_ind = size * 2
@@ -54,6 +52,10 @@ def train_infer_two_gauss(data_name, fac_num, hid_num, start_ind , end_ind , GT_
         numHidden=hid_num,
         corrutionLevel=0.0)
     if train:
+        X, Y, L, unlabeled_inlier_inds, unlabeled_outlier_inds = generate_pairs_two_gauss(data_name, GT_prcnt)
+        print(X.shape, Y.shape, L.shape)
+        # if end ind is not specified iterate to the very last index
+
         model.train(X, Y, L, epochs= ep_num, batch_size=1, print_debug=True)
         model.save('./Weights/' + dataset + '_')
 
@@ -76,6 +78,6 @@ end_index = 1000
 dataset = 'TwoGauss'
 
 train_infer_two_gauss('TwoGauss_data_7dim', fac_num=3, hid_num=3, start_ind = start_index, end_ind= end_index,
-            GT_prcnt= 0.1, train=True, infer=False)
+            GT_prcnt= 0.1, train=False, infer=True)
 
 # datasets=['WPBC','Glass','Lympho','SatImage','PageBlocks','WDBC','Yeast05679v4','Wilt','Stamps','Pima','Ecoli4','SpamBase']

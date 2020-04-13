@@ -128,8 +128,8 @@ def generate_pairs_two_gauss(data_name, GT_prcnt):
 # data_dic['labels'] = labels
 # data_dic['class_labels'] = class_labels
 #
-save_obj(data_dic,'TwoGauss_data_7dim')
+#save_obj(data_dic,'TwoGauss_data_7dim')
 
-#loaded_data = load_obj('TwoGauss_data')
+#loaded_data = load_obj('TwoGauss_data_7dim')
 
-#print(loaded_data['data'])
+#print(loaded_data['class_labels'][1:200])
