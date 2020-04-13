@@ -199,9 +199,9 @@ class FactoredGatedAutoencoder:
                                         tf.transpose(Whf_in)) + bmap)
 
         #### Add discriminative layer
-        Wtf = tf.Variable(tf.random_normal(shape=(H,1)) * 0.01)
+        Wtf = tf.Variable(tf.random_normal(shape=(H, 1)) * 0.01)
         bt = tf.Variable(np.zeros(1, dtype='float32'), name='bt')
-        T= tf.sigmoid(tf.matmul(mappings,Wtf)+bt)
+        T = tf.sigmoid(tf.matmul(mappings, Wtf)+bt)
 
         ####
 
@@ -209,8 +209,6 @@ class FactoredGatedAutoencoder:
         
         ox = tf.matmul(tf.multiply(fy , fH),tf.transpose(Wxf)) + bx
         oy = tf.matmul(tf.multiply(fx , fH),tf.transpose(Wyf)) + by
-
-
 
         cost_gen = tf.nn.l2_loss(ox-x) + tf.nn.l2_loss(oy-y)
         # Add descriminative loss
