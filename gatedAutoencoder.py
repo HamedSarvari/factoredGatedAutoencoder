@@ -357,4 +357,4 @@ class FactoredGatedAutoencoder:
 
             self.is_trained_disc = True
 
-    print('Disc Training DONE')
+        print('Disc Training DONE')
