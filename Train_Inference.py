@@ -30,9 +30,7 @@ def Inference_with_inliers(data_name, model, start_ind, end_ind):
             for ind in range(start_ind, end_ind):
                 print(ind)
                 size = data.shape[0]
-                print('row',data[ind,:])
                 X = np.array([list(data[ind,:])]*size)
-                print('X',X)
                 Y = data
                 file_writer.writerow(model.inference(X, Y).flatten())
                 del X
@@ -52,11 +50,20 @@ def train_infer_two_gauss(data_name, fac_num, hid_num, start_ind , end_ind , GT_
         numHidden=hid_num,
         corrutionLevel=0.0)
     if train:
-        X, Y, L, unlabeled_inlier_inds, unlabeled_outlier_inds = generate_pairs_two_gauss(data_name, GT_prcnt)
-        print(X.shape, Y.shape, L.shape)
-        # if end ind is not specified iterate to the very last index
+        #X, Y, L, unlabeled_inlier_inds, unlabeled_outlier_inds = generate_pairs_two_gauss(data_name, GT_prcnt)
+        X_pos, Y_pos, L_pos, X_neg, Y_neg, L_neg = generate_pairs_two_gauss(data_name, GT_prcnt)
 
-        model.train(X, Y, L, epochs= ep_num, batch_size=1, print_debug=True)
+
+        #model.train_gen(X, Y, L, epochs= ep_num, batch_size=1, print_debug=True)
+        # Train the genrative weights only with positive pairs
+        model.train_gen(X_pos, Y_pos, L_pos, epochs= ep_num, batch_size= 1, print_debug= True)
+        # Train the discriminative weights with both positive and negative weights
+
+        X_all = np.concatenate((X_pos, X_neg))
+        Y_all = np.concatenate((Y_pos, Y_neg))
+        L_all = np.concatenate((L_pos, L_neg))
+
+        model.train_disc(X_all, Y_all, L_all, epochs= ep_num, batch_size= 1, print_debug= True)
         model.save('./Weights/' + dataset + '_')
 
     if infer:
@@ -78,6 +85,6 @@ end_index = 1000
 dataset = 'TwoGauss'
 
 train_infer_two_gauss('TwoGauss_data_7dim', fac_num=3, hid_num=3, start_ind = start_index, end_ind= end_index,
-            GT_prcnt= 0.1, train=False, infer=True)
+            GT_prcnt= 0.1, train= True, infer=False)
 
 # datasets=['WPBC','Glass','Lympho','SatImage','PageBlocks','WDBC','Yeast05679v4','Wilt','Stamps','Pima','Ecoli4','SpamBase']

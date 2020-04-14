@@ -89,32 +89,46 @@ def generate_pairs_two_gauss(data_name, GT_prcnt):
 
     print(len(inlier_inlier_pairs),'in-in')
     print(len(outlier_inlier_pairs), 'out-in')
+    inlier_inlier_pairs = random.sample(inlier_inlier_pairs, len(outlier_inlier_pairs))
+    print(len(inlier_inlier_pairs), 'new in-in')
 
-    List_X = []
-    List_Y = []
-    List_labels = []
+    List_X_pos = []
+    List_Y_pos = []
+    List_labels_pos = []
+
+    List_X_neg = []
+    List_Y_neg = []
+    List_labels_neg = []
 
     for element in inlier_inlier_pairs :
-        List_X.append(data[element[0],:])
-        List_Y.append(data[element[1],:])
-        List_labels.append(1)
+        List_X_pos.append(data[element[0],:])
+        List_Y_pos.append(data[element[1],:])
+        List_labels_pos.append(1)
 
     for element in outlier_inlier_pairs:
-        List_X.append(data[element[0], :])
-        List_Y.append(data[element[1], :])
-        List_labels.append(0)
+        List_X_neg.append(data[element[0], :])
+        List_Y_neg.append(data[element[1], :])
+        List_labels_neg.append(0)
 
 
-    X = np.array(List_X)
-    Y = np.array(List_Y)
+    X_pos = np.array(List_X_pos)
+    Y_pos = np.array(List_Y_pos)
 
-    L = np.matrix(List_labels)
-    L = L.transpose()
+    X_neg = np.array(List_X_neg)
+    Y_neg = np.array(List_Y_neg)
 
-    return X,Y,L, unlabeled_inlier_inds, unlabeled_outlier_inds
+    L_pos = np.matrix(List_labels_pos).transpose()
+    L_neg = np.matrix(List_labels_neg).transpose()
+
+    # print(X_pos[1:2])
+    # print(Y_pos[1:2])
+    # print(np.concatenate((X_pos[1:2],Y_pos[1:2])))
+    # print(np.concatenate((L_pos,L_neg)))
+
+    return X_pos, Y_pos, L_pos, X_neg, Y_neg, L_neg
 
 ########################################################################################################################
-#
+# Use these lines to construct a dataset
 # mu1 = 0
 # mu2 = 5
 # sigma = 1
@@ -129,7 +143,10 @@ def generate_pairs_two_gauss(data_name, GT_prcnt):
 # data_dic['class_labels'] = class_labels
 #
 #save_obj(data_dic,'TwoGauss_data_7dim')
-
+# Test
 #loaded_data = load_obj('TwoGauss_data_7dim')
-
 #print(loaded_data['class_labels'][1:200])
+
+########################################################################################################################
+
+#generate_pairs_two_gauss('TwoGauss_data_7dim',0.1)
