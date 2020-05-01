@@ -77,7 +77,7 @@ def generate_pairs_two_gauss(data_name, GT_prcnt, exp_code):
     labels_info['random_inlier_inds'] = random_inlier_inds
     labels_info['unlabeled_outlier_inds'] = unlabeled_outlier_inds
     labels_info['unlabeled_inlier_inds'] = unlabeled_inlier_inds
-    save_obj(labels_info, data_name + '_code' + str(exp_code) + '_selected_labels_')
+    save_obj(labels_info, data_name + '_code' + str(exp_code) + '_selected_labels')
     #############################################################################################
     # construct the pairs, make sure you keep the order!
 

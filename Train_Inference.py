@@ -17,7 +17,7 @@ def Inference_with_inliers(data_name, exp_code, model, start_ind, end_ind):
     #with tf.device('/job:localhost/replica:0/task:0/device:XLA_GPU:0 '):
     #with tf.device('/gpu:0'):
 
-        loaded_data = load_obj(data_name)
+        loaded_data = load_obj(data_name + '_code' + str(exp_code))
         data = loaded_data['data']
 
 
@@ -56,7 +56,7 @@ def Inference_with_inliers(data_name, exp_code, model, start_ind, end_ind):
 ########################################################################################################################
 
 def train_infer_two_gauss(data_name, exp_code, fac_num, hid_num, start_ind , end_ind , GT_prcnt=0.1,
-                          ep_num = 1, train=True, infer=True):
+                          ep_num = 10, train=True, infer=True):
     if end_ind is None:
         # Two gaussians so number of data points is size * 2
         end_ind = size * 2
@@ -94,6 +94,7 @@ sigma = 1
 dim = 7
 size = 2500
 GT_prcnt = 0.1
+num_epochs = 10
 ########################################################################################################################
 
 start_index = 0
@@ -103,6 +104,6 @@ end_index = 1000
 dataset = 'TwoGauss'
 
 train_infer_two_gauss('TwoGauss_data_7dim', exp_code = 1, fac_num=3, hid_num=3, start_ind = start_index, end_ind= end_index,
-            GT_prcnt= 0.1, train= False, infer= True)
+            GT_prcnt= 0.1, ep_num= num_epochs, train= True, infer= False)
 
 # datasets=['WPBC','Glass','Lympho','SatImage','PageBlocks','WDBC','Yeast05679v4','Wilt','Stamps','Pima','Ecoli4','SpamBase']
