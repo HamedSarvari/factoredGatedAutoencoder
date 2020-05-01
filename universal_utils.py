@@ -4,9 +4,7 @@ def save_obj(obj, name ):
 
     if os.path.isfile('obj/'+ name + '.pkl'):
         print("File already exists")
-        return
-    else:
-        with open('obj/' + name + '.pkl', 'wb') as f:
+    with open('obj/' + name + '.pkl', 'wb') as f:
             pickle.dump(obj, f, pickle.HIGHEST_PROTOCOL)
 
 

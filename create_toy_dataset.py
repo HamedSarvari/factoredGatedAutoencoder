@@ -2,7 +2,7 @@ import numpy as np
 import random
 import pickle
 from universal_utils import *
-
+import datetime
 ########################################################################################################################
 # generates as many as size, 'dim' dimensional guassian points with mean mu and sd sigma.
 # Returns a matrix with generated points
@@ -47,12 +47,12 @@ def Gen_2_gaussians(mu1, mu2, sigma, dim, size):
 
 ########################################################################################################################
 
-def generate_pairs_two_gauss(data_name, GT_prcnt):
+def generate_pairs_two_gauss(data_name, GT_prcnt, exp_code):
 
     loaded_data = load_obj(data_name)
     data = loaded_data['data']
-    labels = loaded_data ['labels']
-    class_labels = loaded_data ['class_labels']
+    labels = loaded_data['labels']
+    class_labels = loaded_data['class_labels']
 
     IDs = np.array(range(data.shape[0]))
     outlier_inds = IDs[labels == 1]
@@ -77,20 +77,19 @@ def generate_pairs_two_gauss(data_name, GT_prcnt):
     labels_info['random_inlier_inds'] = random_inlier_inds
     labels_info['unlabeled_outlier_inds'] = unlabeled_outlier_inds
     labels_info['unlabeled_inlier_inds'] = unlabeled_inlier_inds
-    save_obj(labels_info, data_name + '_labels')
+    save_obj(labels_info, data_name + '_code' + str(exp_code) + '_selected_labels_')
     #############################################################################################
+    # construct the pairs, make sure you keep the order!
 
-    outlier_inlier_pairs = [(a, b) for a in random_outlier_inds for b in random_inlier_inds if a != b] + \
-                           [(a, b) for b in random_outlier_inds for a in random_inlier_inds if a != b]
-
-    inlier_inlier_pairs = [(a, b) for a in random_inlier_inds for b in random_inlier_inds if a != b and
-                           class_labels[a] == class_labels[b]]
+    outlier_inlier_pairs = [(a, b) for a in random_outlier_inds for b in random_inlier_inds if a != b]
+    inlier_inlier_pairs = [(a, b) for a in random_inlier_inds for b in random_inlier_inds if a != b and class_labels[a] == class_labels[b]]
 
 
     print(len(inlier_inlier_pairs),'in-in')
     print(len(outlier_inlier_pairs), 'out-in')
     inlier_inlier_pairs = random.sample(inlier_inlier_pairs, len(outlier_inlier_pairs))
-    print(len(inlier_inlier_pairs), 'new in-in')
+    print(len(inlier_inlier_pairs), 'sampled in-in')
+
 
     List_X_pos = []
     List_Y_pos = []
@@ -149,4 +148,4 @@ def generate_pairs_two_gauss(data_name, GT_prcnt):
 
 ########################################################################################################################
 
-#generate_pairs_two_gauss('TwoGauss_data_7dim',0.1)
+generate_pairs_two_gauss('TwoGauss_data_7dim',GT_prcnt= 0.1, exp_code= 1)
