@@ -115,7 +115,6 @@ class FactoredGatedAutoencoder:
         x = tf.placeholder(tf.float32, [None, dim])
         y = tf.placeholder(tf.float32, [None, dim])
 
-
         Wxf = tf.Variable(self.Wxf_np)
         Wyf = tf.Variable(self.Wyf_np)
         Whf = tf.Variable(self.Whf_np)
