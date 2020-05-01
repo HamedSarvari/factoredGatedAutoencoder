@@ -82,6 +82,7 @@ GT_prcnt = 0.1
 start_index = 0
 end_index = 1000
 
+
 dataset = 'TwoGauss'
 
 train_infer_two_gauss('TwoGauss_data_7dim', fac_num=3, hid_num=3, start_ind = start_index, end_ind= end_index,

@@ -121,8 +121,8 @@ class FactoredGatedAutoencoder:
         Whf = tf.Variable(self.Whf_np)
         Whf_in = tf.Variable(self.Whf_in_np)
         bmap = tf.Variable(self.bmap_np)
-        Wtf=tf.Variable(self.Wtf_np)
-        bt=tf.Variable(self.bt_np)
+        Wtf = tf.Variable(self.Wtf_np)
+        bt = tf.Variable(self.bt_np)
 
         fx = tf.matmul(x, Wxf)
         fy = tf.matmul(y, Wyf)
@@ -305,8 +305,8 @@ class FactoredGatedAutoencoder:
         cost = cost_gen + 0.4* cost_desc
         optimizer = tf.train.AdamOptimizer(learning_rate=lr).minimize(cost)
         
-        norm_Wxf = tf.nn.l2_normalize(Wxf, [0,1], epsilon=1e-12, name=None)
-        norm_Wyf = tf.nn.l2_normalize(Wyf, [0,1], epsilon=1e-12, name=None)
+        norm_Wxf = tf.nn.l2_normalize(Wxf, [0, 1], epsilon=1e-12, name=None)
+        norm_Wyf = tf.nn.l2_normalize(Wyf, [0, 1], epsilon=1e-12, name=None)
         norm_Wtf = tf.nn.l2_normalize(Wtf, [0, 1], epsilon=1e-12, name=None)
 
         Wxf_normalize = Wxf.assign(norm_Wxf)
