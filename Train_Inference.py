@@ -17,7 +17,7 @@ def Inference_with_inliers(data_name, exp_code, model, start_ind, end_ind):
     #with tf.device('/job:localhost/replica:0/task:0/device:XLA_GPU:0 '):
     #with tf.device('/gpu:0'):
 
-        loaded_data = load_obj(data_name + '_code' + str(exp_code))
+        loaded_data = load_obj(data_name)
         data = loaded_data['data']
 
 
@@ -25,7 +25,7 @@ def Inference_with_inliers(data_name, exp_code, model, start_ind, end_ind):
         class_labels = loaded_data['class_labels']
 
         # retrieve labels of the data points labeled and used for training
-        selected_labels = load_obj(data_name + '_selected_labels_' + str(exp_code))
+        selected_labels = load_obj(data_name +'_code' + str(exp_code) + '_selected_labels')
         random_outlier_inds = selected_labels['random_outlier_inds']
         random_inlier_inds = selected_labels['random_inlier_inds']
 
@@ -94,7 +94,7 @@ sigma = 1
 dim = 7
 size = 2500
 GT_prcnt = 0.1
-num_epochs = 10
+num_epochs = 1
 ########################################################################################################################
 
 start_index = 0
@@ -104,6 +104,6 @@ end_index = 1000
 dataset = 'TwoGauss'
 
 train_infer_two_gauss('TwoGauss_data_7dim', exp_code = 1, fac_num=3, hid_num=3, start_ind = start_index, end_ind= end_index,
-            GT_prcnt= 0.1, ep_num= num_epochs, train= True, infer= False)
+            GT_prcnt= 0.1, ep_num= num_epochs, train= False, infer= True)
 
 # datasets=['WPBC','Glass','Lympho','SatImage','PageBlocks','WDBC','Yeast05679v4','Wilt','Stamps','Pima','Ecoli4','SpamBase']
