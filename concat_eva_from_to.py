@@ -23,12 +23,12 @@ def eval_model(scores, labels_dic):
     return average_precision_score(y_true,scores)
 ###########################################################################################################################
 
-def concat_files(dataset, start_inds):
+def concat_files(dataset, exp_code, start_inds):
 
     final_mat = None
     for i in range(len(start_inds)-1):
 
-        add = './results/' + dataset + '_Inference_scores_' + str(start_inds[i]) + '_to_' + str(start_inds[i+1]) + '.csv'
+        add = './results/' + dataset + '_code' + str(exp_code) + '_Inference_scores_' + str(start_inds[i]) + '_to_' + str(start_inds[i+1]) + '.csv'
 
         if final_mat is None:
             final_mat = np.array(pd.read_csv(add, header= None))
@@ -47,27 +47,29 @@ def concat_files(dataset, start_inds):
     return final_mat
 
 ###########################################################################################################################
+
+
 # scores = concat_files('TwoGauss_data_7dim', start_inds= [0,500,1000,1500,2000,2500,3000,3500,4000,4500,5000])
-# #scores = concat_files('TwoGauss_data_7dim', start_inds= [0,1000,2000,3000,4000,5000])
+scores = concat_files('TwoGauss_data_7dim',1, start_inds= [0,500,1000,2000,3000,4000,5000])
 # print('scores shape', scores.shape)
 # save_obj(scores,'All_scores_twoGauss_data_7dim')
 ###########################################################################################################################
-scores = load_obj('All_scores_twoGauss_data_7dim')
+#scores = load_obj('All_scores_twoGauss_data_7dim')
 scores_mean = np.mean(scores,axis=1)
 scores_updated = 1- scores_mean
 print(len(scores_updated))
 print(average_precision_score(labels, scores_updated))
 
-
-saved_labels = load_obj('TwoGauss_data_7dim_labels')
-outlier_inds = saved_labels['random_outlier_inds']
-inlier_inds = saved_labels['random_inlier_inds']
-selected_inlier_inds = random.sample(inlier_inds, len(outlier_inds))
-
-all_selected_inds = outlier_inds+selected_inlier_inds
-selected_mean =  1 - np.mean(scores[:,all_selected_inds], axis=1)
-print(average_precision_score(labels,selected_mean))
-
+#
+# saved_labels = load_obj('TwoGauss_data_7dim_labels')
+# outlier_inds = saved_labels['random_outlier_inds']
+# inlier_inds = saved_labels['random_inlier_inds']
+# selected_inlier_inds = random.sample(inlier_inds, len(outlier_inds))
+#
+# all_selected_inds = outlier_inds+selected_inlier_inds
+# selected_mean =  1 - np.mean(scores[:,all_selected_inds], axis=1)
+# print(average_precision_score(labels,selected_mean))
+#
 
 
 #

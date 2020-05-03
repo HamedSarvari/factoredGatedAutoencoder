@@ -171,7 +171,6 @@ class FactoredGatedAutoencoder:
 
         Wxf = tf.Variable(tf.random_normal(shape=(dim, F)) * 0.01)
         Wyf = tf.Variable(tf.random_normal(shape=(dim, F)) * 0.01)
-
         Whf = tf.Variable(np.exp(numpy_rng.uniform(
             low=-3.0, high=-2.0, size=(H, F)), dtype='float32'))
         Whf_in = tf.Variable(
@@ -199,6 +198,8 @@ class FactoredGatedAutoencoder:
         ox = tf.matmul(tf.multiply(fy, fH), tf.transpose(Wxf)) + bx
         oy = tf.matmul(tf.multiply(fx, fH), tf.transpose(Wyf)) + by
 
+
+
         cost = tf.nn.l2_loss(ox - x) + tf.nn.l2_loss(oy - y)
 
         optimizer = tf.train.AdamOptimizer(learning_rate=lr).minimize(cost)
@@ -225,6 +226,13 @@ class FactoredGatedAutoencoder:
                     sess.run(Wyf_normalize)
 
                 cost_ = sess.run(cost, feed_dict={x: X, y: Y}) / n
+                ox_ = sess.run(ox, feed_dict={x: X, y: Y})
+                x_ = sess.run(x, feed_dict={x: X, y: Y})
+
+                print('This is x', x_[0])
+                print('This is x', np.linalg.norm(x_[0]))
+                print('This is ox', np.linalg.norm(ox_[0]))
+                print('this is cost', cost_)
                 if print_debug:
                     print("Epoch: %03d/%03d cost: %.9f" % \
                           (epoch, epochs, cost_))
@@ -258,6 +266,13 @@ class FactoredGatedAutoencoder:
         # dim=len(X)
 
         numpy_rng = np.random.RandomState(1)
+
+        if self.normalize_data:
+            X -= X.mean(0)[None, :]
+            Y -= Y.mean(0)[None, :]
+            X /= X.std(0)[None, :] + X.std() * 0.1
+            Y /= Y.std(0)[None, :] + Y.std() * 0.1
+
         x = tf.placeholder(tf.float32, [None, dim])
         y = tf.placeholder(tf.float32, [None, dim])
         l = tf.placeholder(tf.float32, [None, 1])
@@ -295,13 +310,15 @@ class FactoredGatedAutoencoder:
         ox = tf.matmul(tf.multiply(fy , fH),tf.transpose(Wxf)) + bx
         oy = tf.matmul(tf.multiply(fx , fH),tf.transpose(Wyf)) + by
 
-        cost_gen = tf.nn.l2_loss(ox-x) + tf.nn.l2_loss(oy-y)
+
+        cost_gen = tf.nn.l2_loss(ox - x) + tf.nn.l2_loss(oy - y)
+
         # Add descriminative loss
         cost_desc = tf.nn.l2_loss(T-l)
 
         # Define the hybrid cost
 
-        cost = cost_gen + 0.4* cost_desc
+        cost = 0.1*cost_gen + cost_desc
         optimizer = tf.train.AdamOptimizer(learning_rate=lr).minimize(cost)
         
         norm_Wxf = tf.nn.l2_normalize(Wxf, [0, 1], epsilon=1e-12, name=None)
@@ -325,11 +342,25 @@ class FactoredGatedAutoencoder:
                     batch_ys = Y[randidx]
                     label = L[randidx]
                     sess.run(optimizer, feed_dict={x: batch_xs, y: batch_ys, l:label})
+
                     sess.run(Wxf_normalize)
                     sess.run(Wyf_normalize)
                     sess.run(Wtf_normalize)
 
                 cost_ = sess.run(cost, feed_dict={x: X, y: Y, l: L }) / n
+                ### REMOVE
+
+
+                print('cost', cost_)
+
+                cost_gen_ = sess.run(cost_gen, feed_dict={x: X, y: Y, l: L}) / n
+                cost_desc_ = sess.run(cost_desc, feed_dict={x: X, y: Y, l: L}) / n
+
+
+                print('Cost gen', cost_gen_)
+                print('Cost disc', cost_desc_)
+                ###
+
                 if print_debug:
                     print ("Epoch: %03d/%03d cost: %.9f" %\
                            (epoch,epochs ,cost_) )
