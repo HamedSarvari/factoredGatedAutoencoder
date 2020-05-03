@@ -148,4 +148,4 @@ def generate_pairs_two_gauss(data_name, GT_prcnt, exp_code):
 
 ########################################################################################################################
 
-generate_pairs_two_gauss('TwoGauss_data_7dim',GT_prcnt= 0.1, exp_code= 1)
+#generate_pairs_two_gauss('TwoGauss_data_7dim',GT_prcnt= 0.1, exp_code= 1)

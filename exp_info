@@ -1,0 +1,10 @@
+exp2:
+Done on this branch :   Sequential_nonlinear_2g
+Cost is combination of gen and disc as below:
+cost = 0.1*cost_gen + cost_desc
+normlaization problem for disc is solved compared to exp1
+---------------------------------------------------------
+exp3:
+
+in disc_training only use cost_disc to update weights. 
+cost = cost_desc

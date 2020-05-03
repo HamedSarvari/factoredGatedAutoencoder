@@ -96,14 +96,15 @@ size = 2500
 GT_prcnt = 0.1
 num_epochs = 1
 ########################################################################################################################
-
-start_index = 0
-end_index = 1000
-
-
+current_ind = 0
+index_list = list(range(0,5001,500))
+start_index = index_list[current_ind]
+end_index = index_list[current_ind + 1]
 dataset = 'TwoGauss'
 
-train_infer_two_gauss('TwoGauss_data_7dim', exp_code = 1, fac_num=3, hid_num=3, start_ind = start_index, end_ind= end_index,
-            GT_prcnt= 0.1, ep_num= num_epochs, train= True, infer= False)
-
+#train_infer_two_gauss('TwoGauss_data_7dim', exp_code = 1, fac_num=3, hid_num=3, start_ind = start_index, end_ind= end_index,
+#            GT_prcnt= 0.1, ep_num= num_epochs, train= True, infer= False)
 # datasets=['WPBC','Glass','Lympho','SatImage','PageBlocks','WDBC','Yeast05679v4','Wilt','Stamps','Pima','Ecoli4','SpamBase']
+
+
+

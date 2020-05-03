@@ -318,7 +318,7 @@ class FactoredGatedAutoencoder:
 
         # Define the hybrid cost
 
-        cost = 0.1*cost_gen + cost_desc
+        cost = cost_desc
         optimizer = tf.train.AdamOptimizer(learning_rate=lr).minimize(cost)
         
         norm_Wxf = tf.nn.l2_normalize(Wxf, [0, 1], epsilon=1e-12, name=None)
