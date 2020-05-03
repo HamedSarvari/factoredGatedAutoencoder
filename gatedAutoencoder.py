@@ -229,10 +229,10 @@ class FactoredGatedAutoencoder:
                 ox_ = sess.run(ox, feed_dict={x: X, y: Y})
                 x_ = sess.run(x, feed_dict={x: X, y: Y})
 
-                print('This is x', x_[0])
-                print('This is x', np.linalg.norm(x_[0]))
-                print('This is ox', np.linalg.norm(ox_[0]))
-                print('this is cost', cost_)
+                #print('This is x', x_[0])
+                #print('This is x', np.linalg.norm(x_[0]))
+                #print('This is ox', np.linalg.norm(ox_[0]))
+                #print('this is cost', cost_)
                 if print_debug:
                     print("Epoch: %03d/%03d cost: %.9f" % \
                           (epoch, epochs, cost_))
@@ -351,14 +351,14 @@ class FactoredGatedAutoencoder:
                 ### REMOVE
 
 
-                print('cost', cost_)
+                #print('cost', cost_)
 
                 cost_gen_ = sess.run(cost_gen, feed_dict={x: X, y: Y, l: L}) / n
                 cost_desc_ = sess.run(cost_desc, feed_dict={x: X, y: Y, l: L}) / n
 
 
-                print('Cost gen', cost_gen_)
-                print('Cost disc', cost_desc_)
+                #print('Cost gen', cost_gen_)
+                #print('Cost disc', cost_desc_)
                 ###
 
                 if print_debug:
