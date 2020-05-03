@@ -96,7 +96,8 @@ size = 2500
 GT_prcnt = 0.1
 num_epochs = 1
 ########################################################################################################################
-current_ind = 0
+# For Argo
+current_ind = int(os.environ["SLURM_ARRAY_TASK_ID"])
 index_list = list(range(0,5001,500))
 start_index = index_list[current_ind]
 end_index = index_list[current_ind + 1]
