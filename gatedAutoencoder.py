@@ -141,6 +141,7 @@ class FactoredGatedAutoencoder:
             #out = T.eval()
 
             return out
+#######################################################################################################################
     # This is supposed to train the weights of generative model first
     def train_gen(self, X, Y, L , epochs=150, batch_size=1000, print_debug=True):
         """ train the factored autoencoder
@@ -248,12 +249,14 @@ class FactoredGatedAutoencoder:
             self.is_trained_gen = True
         print('GEN Training DONE')
 
+#######################################################################################################################
     def train_disc(self, X, Y, L,
               epochs=150,
               batch_size=1,
               print_debug=True):
+        # In this version we want to train both layers simultaneously so there is no need for train_gen
+        #assert (self.is_trained_gen)
 
-        assert (self.is_trained_gen)
         F = self.F
         H = self.H
         p = self.p
@@ -293,8 +296,8 @@ class FactoredGatedAutoencoder:
             x_corrupted = x
             y_corrupted = y
         
-        fx = tf.matmul(x_corrupted , Wxf)
-        fy = tf.matmul(y_corrupted , Wyf)
+        fx = tf.matmul(x_corrupted, Wxf)
+        fy = tf.matmul(y_corrupted, Wyf)
         
         mappings = tf.sigmoid(tf.matmul(tf.multiply(fx , fy), 
                                         tf.transpose(Whf_in)) + bmap)
@@ -306,7 +309,7 @@ class FactoredGatedAutoencoder:
         T = tf.sigmoid(tf.matmul(mappings, Wtf)+bt)
 
         ####
-        
+
         ox = tf.matmul(tf.multiply(fy , fH),tf.transpose(Wxf)) + bx
         oy = tf.matmul(tf.multiply(fx , fH),tf.transpose(Wyf)) + by
 
@@ -318,7 +321,8 @@ class FactoredGatedAutoencoder:
 
         # Define the hybrid cost
 
-        cost = cost_desc
+        cost = 0.1*cost_gen + cost_desc
+
         optimizer = tf.train.AdamOptimizer(learning_rate=lr).minimize(cost)
         
         norm_Wxf = tf.nn.l2_normalize(Wxf, [0, 1], epsilon=1e-12, name=None)
@@ -357,8 +361,9 @@ class FactoredGatedAutoencoder:
                 cost_desc_ = sess.run(cost_desc, feed_dict={x: X, y: Y, l: L}) / n
 
 
-                #print('Cost gen', cost_gen_)
-                #print('Cost disc', cost_desc_)
+                print('Cost gen', cost_gen_)
+                print('Cost disc', cost_desc_)
+
                 ###
 
                 if print_debug:
@@ -388,3 +393,146 @@ class FactoredGatedAutoencoder:
             self.is_trained_disc = True
 
         print('Disc Training DONE')
+
+########################################################################################################################
+
+    def train_both(self, X, Y, L, epochs=150, batch_size=1000, print_debug=True):
+        """ train the factored autoencoder
+        X: x-input
+        Y: y-input
+        """
+        F = self.F
+        H = self.H
+        p = self.p
+        lr = self.learningRate
+        eps_vis = self.eps_vis
+        eps_map = self.eps_map
+
+        n, dim = X.shape
+        assert (dim == Y.shape[1])
+
+        numpy_rng = np.random.RandomState(1)
+
+        if self.normalize_data:
+            X -= X.mean(0)[None, :]
+            Y -= Y.mean(0)[None, :]
+            X /= X.std(0)[None, :] + X.std() * 0.1
+            Y /= Y.std(0)[None, :] + Y.std() * 0.1
+
+        x = tf.placeholder(tf.float32, [None, dim])
+        y = tf.placeholder(tf.float32, [None, dim])
+        l = tf.placeholder(tf.float32, [None, 1])
+
+
+        Wxf = tf.Variable(tf.random_normal(shape=(dim, F)) * 0.01)
+        Wyf = tf.Variable(tf.random_normal(shape=(dim, F)) * 0.01)
+        Whf = tf.Variable(np.exp(numpy_rng.uniform(
+            low=-3.0, high=-2.0, size=(H, F)), dtype='float32'))
+        Whf_in = tf.Variable(
+            numpy_rng.uniform(
+                low=-0.01, high=+0.01, size=(H, F)).astype('float32'))
+
+        bmap = tf.Variable(np.zeros(H, dtype='float32'), name='bmap')
+        bx = tf.Variable(np.zeros(dim, dtype='float32'), name='bx')
+        by = tf.Variable(np.zeros(dim, dtype='float32'), name='by')
+
+        if p > 0.0:
+            x_corrupted = tf.multiply(random_binomial(tf.shape(x), p=p), x)
+            y_corrupted = tf.multiply(random_binomial(tf.shape(y), p=p), y)
+        else:
+            x_corrupted = x
+            y_corrupted = y
+
+        fx = tf.matmul(x_corrupted, Wxf)
+        fy = tf.matmul(y_corrupted, Wyf)
+
+        mappings = tf.sigmoid(tf.matmul(tf.multiply(fx, fy),
+                                        tf.transpose(Whf_in)) + bmap)
+        fH = tf.matmul(mappings, Whf)
+
+        #### Add discriminative layer
+        Wtf = tf.Variable(tf.random_normal(shape=(H, 1)) * 0.01)
+        bt = tf.Variable(np.zeros(1, dtype='float32'), name='bt')
+        T = tf.sigmoid(tf.matmul(mappings, Wtf) + bt)
+        ####
+        ox = tf.matmul(tf.multiply(fy, fH), tf.transpose(Wxf)) + bx
+        oy = tf.matmul(tf.multiply(fx, fH), tf.transpose(Wyf)) + by
+
+        cost_gen = tf.nn.l2_loss(ox - x) + tf.nn.l2_loss(oy - y)
+
+        # Add descriminative loss
+        cost_desc = tf.nn.l2_loss(T-l)
+
+        # Define the hybrid cost
+
+        cost = 0.05*cost_gen + 0.95*cost_desc
+
+        optimizer = tf.train.AdamOptimizer(learning_rate=lr).minimize(cost)
+
+        norm_Wxf = tf.nn.l2_normalize(Wxf, [0, 1], epsilon=1e-12, name=None)
+        norm_Wyf = tf.nn.l2_normalize(Wyf, [0, 1], epsilon=1e-12, name=None)
+        norm_Wtf = tf.nn.l2_normalize(Wtf, [0, 1], epsilon=1e-12, name=None)
+
+        Wxf_normalize = Wxf.assign(norm_Wxf)
+        Wyf_normalize = Wxf.assign(norm_Wyf)
+        Wtf_normalize = Wtf.assign(norm_Wtf)
+
+        with tf.Session() as sess:
+            init = tf.global_variables_initializer()
+            sess.run(init)
+
+            for epoch in range(epochs):
+                total_runs = int(n / batch_size)
+                for i in range(total_runs):
+                    randidx = np.random.randint(
+                        n, size=batch_size).astype('int32')
+                    batch_xs = X[randidx]
+                    batch_ys = Y[randidx]
+                    label = L[randidx]
+                    sess.run(optimizer, feed_dict={x: batch_xs, y: batch_ys, l: label})
+
+                    sess.run(Wxf_normalize)
+                    sess.run(Wyf_normalize)
+                    sess.run(Wtf_normalize)
+
+                cost_ = sess.run(cost, feed_dict={x: X, y: Y, l: L}) / n
+                ### REMOVE
+
+                # print('cost', cost_)
+
+                cost_gen_ = sess.run(cost_gen, feed_dict={x: X, y: Y, l: L}) / n
+                cost_desc_ = sess.run(cost_desc, feed_dict={x: X, y: Y, l: L}) / n
+
+                print('Cost gen', cost_gen_)
+                print('Cost disc', cost_desc_)
+
+                ###
+
+                if print_debug:
+                    print("Epoch: %03d/%03d cost: %.9f" % \
+                          (epoch, epochs, cost_))
+
+            # store weights
+            self.Wxf_np = np.array(Wxf.eval(sess))
+            print('ShapeX', self.Wxf_np.shape)
+
+            self.Wyf_np = np.array(Wyf.eval(sess))
+
+            print('ShapeY', self.Wyf_np.shape)
+
+            self.Whf_np = np.array(Whf.eval(sess))
+
+            print('ShapeH', self.Whf_np.shape)
+
+            self.Whf_in_np = np.array(Whf_in.eval(sess))
+            self.bmap_np = np.array(bmap.eval(sess))
+            self.bx_np = np.array(bx.eval(sess))
+            self.by_np = np.array(by.eval(sess))
+            self.Wtf_np = np.array(Wtf.eval(sess))
+            self.bt_np = np.array(bt.eval(sess))
+
+            self.is_trained_disc = True
+
+        print('Disc Training DONE')
+
+        ###########$$$$$$$$$$$$$$

@@ -49,8 +49,8 @@ def concat_files(dataset, exp_code, start_inds):
 ###########################################################################################################################
 
 
-# scores = concat_files('TwoGauss_data_7dim', start_inds= [0,500,1000,1500,2000,2500,3000,3500,4000,4500,5000])
-scores = concat_files('TwoGauss_data_7dim',2, start_inds= [0,1000,2000,3000,4000,5000])
+scores = concat_files('TwoGauss_data_7dim', 1,start_inds= [0,500,1000,2000,3000,4000,5000])
+#scores = concat_files('TwoGauss_data_7dim',1, start_inds= list(range(0,5001,1000)))
 # print('scores shape', scores.shape)
 # save_obj(scores,'All_scores_twoGauss_data_7dim')
 ###########################################################################################################################

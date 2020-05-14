@@ -46,7 +46,6 @@ def Inference_with_inliers(data_name, exp_code, model, start_ind, end_ind):
                 # (X,Y) --> (o,i) and (i,i) pairs have been used to train
                 # (unknown,i) is now used for inference --> if it's inlier it should output closer to 1, if outlier it should output closer to 0
 
-                print('hereeeeeeee', len(random_inlier_inds))
                 Y = data[random_inlier_inds,:]
                 file_writer.writerow(model.inference(X, Y).flatten())
                 print('random inlier inds', len(random_inlier_inds))
@@ -73,14 +72,14 @@ def train_infer_two_gauss(data_name, exp_code, fac_num, hid_num, start_ind , end
 
         #model.train_gen(X, Y, L, epochs= ep_num, batch_size=1, print_debug=True)
         # Train the genrative weights only with positive pairs
-        model.train_gen(X_pos, Y_pos, L_pos, epochs= ep_num, batch_size= 1, print_debug= True)
+        #model.train_gen(X_pos, Y_pos, L_pos, epochs= ep_num, batch_size= 1, print_debug= True)
         # Train the discriminative weights with both positive and negative weights
 
         X_all = np.concatenate((X_pos, X_neg))
         Y_all = np.concatenate((Y_pos, Y_neg))
         L_all = np.concatenate((L_pos, L_neg))
-
-        model.train_disc(X_all, Y_all, L_all, epochs= ep_num, batch_size= 1, print_debug= True)
+        print(len(L_neg),len(L_pos))
+        model.train_both(X_all, Y_all, L_all, epochs= ep_num, batch_size= 1, print_debug= True)
         model.save('./Weights/' + dataset + '_code' + str(exp_code) + '_')
 
     if infer:
@@ -94,17 +93,19 @@ sigma = 1
 dim = 7
 size = 2500
 GT_prcnt = 0.1
-num_epochs = 1
+num_epochs = 10
 ########################################################################################################################
 # For Argo
-current_ind = int(os.environ["SLURM_ARRAY_TASK_ID"])
+#current_ind = int(os.environ["SLURM_ARRAY_TASK_ID"])
+current_ind=1
 index_list = list(range(0,5001,500))
+print(index_list)
 start_index = index_list[current_ind]
 end_index = index_list[current_ind + 1]
 dataset = 'TwoGauss'
 
-#train_infer_two_gauss('TwoGauss_data_7dim', exp_code = 1, fac_num=3, hid_num=3, start_ind = start_index, end_ind= end_index,
-#            GT_prcnt= 0.1, ep_num= num_epochs, train= True, infer= False)
+train_infer_two_gauss('TwoGauss_data_7dim', exp_code = 1, fac_num=3, hid_num=3, start_ind = start_index, end_ind= end_index,
+            GT_prcnt= 0.1, ep_num= num_epochs, train= True, infer= False)
 # datasets=['WPBC','Glass','Lympho','SatImage','PageBlocks','WDBC','Yeast05679v4','Wilt','Stamps','Pima','Ecoli4','SpamBase']
 
 
