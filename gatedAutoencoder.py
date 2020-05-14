@@ -55,8 +55,8 @@ class FactoredGatedAutoencoder:
     def save(self, modelname):
         """ saves the model onto disk
         """
-        assert(self.is_trained_gen)
-        assert(self.is_trained_disc)
+        #assert(self.is_trained_gen)
+        #assert(self.is_trained_disc)
         np.save(modelname + "Wxf", self.Wxf_np)
         np.save(modelname + "Wyf", self.Wyf_np)
         np.save(modelname + "Whf", self.Whf_np)
