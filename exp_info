@@ -8,3 +8,15 @@ exp3:
 
 in disc_training only use cost_disc to update weights. 
 cost = cost_desc
+
+---------------------------------------------------------
+exp4: 
+
+Use train_both function to train both set of weight at the same time.
+
+        cost = 0.05*cost_gen + 0.95*cost_desc
+---------------------------------------------------------
+exp5:
+
+Same as exp4. Just changing the  "fac_num=5, hid_num=3"
+
