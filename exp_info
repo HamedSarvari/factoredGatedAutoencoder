@@ -19,4 +19,8 @@ Use train_both function to train both set of weight at the same time.
 exp5:
 
 Same as exp4. Just changing the  "fac_num=5, hid_num=3"
+----------------------------------------------------------
+exp6:
+
+same as exp5 just the normalization is set to false
 

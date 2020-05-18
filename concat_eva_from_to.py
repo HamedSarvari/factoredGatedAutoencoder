@@ -9,12 +9,7 @@ from tensorflow.python.ops.metrics_impl import average_precision_at_k
 from Generate_input import *
 from universal_utils import *
 from sklearn.metrics import average_precision_score
-###########################################################################################################################
-data_name = 'TwoGauss_data_7dim'
-loaded_data = load_obj(data_name)
-data = loaded_data['data']
-labels = loaded_data['labels']
-class_labels = loaded_data['class_labels']
+
 ###########################################################################################################################
 
 def eval_model(scores, labels_dic):
@@ -47,32 +42,37 @@ def concat_files(dataset, exp_code, start_inds):
     return final_mat
 
 ###########################################################################################################################
-
-
-scores = concat_files('TwoGauss_data_7dim', 1,start_inds= [0,500,1000,2000,3000,4000,5000])
+index_list = list(range(0,5001,500))
+exp_code = 5
+scores = concat_files('TwoGauss_data_7dim', exp_code, start_inds= index_list)
 #scores = concat_files('TwoGauss_data_7dim',1, start_inds= list(range(0,5001,1000)))
 # print('scores shape', scores.shape)
-# save_obj(scores,'All_scores_twoGauss_data_7dim')
+save_obj(scores,'outlier_scores_TwoGauss_data_7dim_' + 'exp' + str(exp_code))
+
+###########################################################################################################################
+
+data_name = 'TwoGauss_data_7dim'
+loaded_data = load_obj(data_name)
+data = loaded_data['data']
+labels = loaded_data['labels']
+class_labels = loaded_data['class_labels']
 ###########################################################################################################################
 #scores = load_obj('All_scores_twoGauss_data_7dim')
-scores_mean = np.mean(scores,axis=1)
-scores_updated = 1- scores_mean
+scores_mean = np.mean(scores, axis=1)
+scores_updated = 1 -scores_mean
 print(len(scores_updated))
 print(average_precision_score(labels, scores_updated))
 
-#
+
 # saved_labels = load_obj('TwoGauss_data_7dim_labels')
 # outlier_inds = saved_labels['random_outlier_inds']
 # inlier_inds = saved_labels['random_inlier_inds']
 # selected_inlier_inds = random.sample(inlier_inds, len(outlier_inds))
-#
+
 # all_selected_inds = outlier_inds+selected_inlier_inds
 # selected_mean =  1 - np.mean(scores[:,all_selected_inds], axis=1)
 # print(average_precision_score(labels,selected_mean))
-#
 
-
-#
 # data_dic, labels_dic, data_np = data_init('Glass')
 # print(len(labels_dic.values()))
 # print(eval_model(scores_updated,labels_dic))

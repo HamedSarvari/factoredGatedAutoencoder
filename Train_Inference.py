@@ -64,7 +64,9 @@ def train_infer_two_gauss(data_name, exp_code, fac_num, hid_num, start_ind , end
     model = FactoredGatedAutoencoder(
         numFactors=fac_num,
         numHidden=hid_num,
-        corrutionLevel=0.0)
+        corrutionLevel=0.0,
+        normalize_data= False
+    )
     if train:
         #X, Y, L, unlabeled_inlier_inds, unlabeled_outlier_inds = generate_pairs_two_gauss(data_name, GT_prcnt)
         X_pos, Y_pos, L_pos, X_neg, Y_neg, L_neg = generate_pairs_two_gauss(data_name, GT_prcnt, exp_code)
