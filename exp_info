@@ -23,4 +23,12 @@ Same as exp4. Just changing the  "fac_num=5, hid_num=3"
 exp6:
 
 same as exp5 just the normalization is set to false
+----------------------------------------------------------
+exp7:
+
+Changed the normlalztion to row-wise normalizaton so each row has a norm of 1. This way product of two vectors is maximized when they are equal.
+
+Also:        cost = 0.01*cost_gen + 0.99*cost_desc
+
+----------------------------------------------------------
 

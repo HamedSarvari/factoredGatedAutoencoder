@@ -161,11 +161,21 @@ class FactoredGatedAutoencoder:
 
         numpy_rng = np.random.RandomState(1)
 
+        #if self.normalize_data:
+            # Old normalization
+            # X -= X.mean(0)[None, :]
+            # Y -= Y.mean(0)[None, :]
+            # X /= X.std(0)[None, :] + X.std() * 0.1
+            # Y /= Y.std(0)[None, :] + Y.std() * 0.1
+
+
+            # new normalization. Normalize based on rows so the dot product of two vectors will be maximum if they are equal
         if self.normalize_data:
-            X -= X.mean(0)[None, :]
-            Y -= Y.mean(0)[None, :]
-            X /= X.std(0)[None, :] + X.std() * 0.1
-            Y /= Y.std(0)[None, :] + Y.std() * 0.1
+            X = X / np.array(np.apply_along_axis(np.linalg.norm, 1, X))[:, None]
+            Y = Y / np.array(np.apply_along_axis(np.linalg.norm, 1, Y))[:, None]
+
+
+
 
         x = tf.placeholder(tf.float32, [None, dim])
         y = tf.placeholder(tf.float32, [None, dim])
@@ -270,11 +280,14 @@ class FactoredGatedAutoencoder:
 
         numpy_rng = np.random.RandomState(1)
 
+        # if self.normalize_data:
+        #     X -= X.mean(0)[None, :]
+        #     Y -= Y.mean(0)[None, :]
+        #     X /= X.std(0)[None, :] + X.std() * 0.1
+        #     Y /= Y.std(0)[None, :] + Y.std() * 0.1
         if self.normalize_data:
-            X -= X.mean(0)[None, :]
-            Y -= Y.mean(0)[None, :]
-            X /= X.std(0)[None, :] + X.std() * 0.1
-            Y /= Y.std(0)[None, :] + Y.std() * 0.1
+            X = X / np.array(np.apply_along_axis(np.linalg.norm, 1, X))[:, None]
+            Y = Y / np.array(np.apply_along_axis(np.linalg.norm, 1, Y))[:, None]
 
         x = tf.placeholder(tf.float32, [None, dim])
         y = tf.placeholder(tf.float32, [None, dim])
@@ -354,12 +367,8 @@ class FactoredGatedAutoencoder:
                 cost_ = sess.run(cost, feed_dict={x: X, y: Y, l: L }) / n
                 ### REMOVE
 
-
-                #print('cost', cost_)
-
                 cost_gen_ = sess.run(cost_gen, feed_dict={x: X, y: Y, l: L}) / n
                 cost_desc_ = sess.run(cost_desc, feed_dict={x: X, y: Y, l: L}) / n
-
 
                 print('Cost gen', cost_gen_)
                 print('Cost disc', cost_desc_)
@@ -413,11 +422,15 @@ class FactoredGatedAutoencoder:
 
         numpy_rng = np.random.RandomState(1)
 
+        # if self.normalize_data:
+        #     X -= X.mean(0)[None, :]
+        #     Y -= Y.mean(0)[None, :]
+        #     X /= X.std(0)[None, :] + X.std() * 0.1
+        #     Y /= Y.std(0)[None, :] + Y.std() * 0.1
+
         if self.normalize_data:
-            X -= X.mean(0)[None, :]
-            Y -= Y.mean(0)[None, :]
-            X /= X.std(0)[None, :] + X.std() * 0.1
-            Y /= Y.std(0)[None, :] + Y.std() * 0.1
+            X = X / np.array(np.apply_along_axis(np.linalg.norm, 1, X))[:, None]
+            Y = Y / np.array(np.apply_along_axis(np.linalg.norm, 1, Y))[:, None]
 
         x = tf.placeholder(tf.float32, [None, dim])
         y = tf.placeholder(tf.float32, [None, dim])
@@ -460,12 +473,12 @@ class FactoredGatedAutoencoder:
 
         cost_gen = tf.nn.l2_loss(ox - x) + tf.nn.l2_loss(oy - y)
 
-        # Add descriminative loss
+        # Add discriminative loss
         cost_desc = tf.nn.l2_loss(T-l)
 
         # Define the hybrid cost
 
-        cost = 0.05*cost_gen + 0.95*cost_desc
+        cost = 0.01*cost_gen + 0.99*cost_desc
 
         optimizer = tf.train.AdamOptimizer(learning_rate=lr).minimize(cost)
 
@@ -498,14 +511,11 @@ class FactoredGatedAutoencoder:
                 cost_ = sess.run(cost, feed_dict={x: X, y: Y, l: L}) / n
                 ### REMOVE
 
-                # print('cost', cost_)
-
                 cost_gen_ = sess.run(cost_gen, feed_dict={x: X, y: Y, l: L}) / n
                 cost_desc_ = sess.run(cost_desc, feed_dict={x: X, y: Y, l: L}) / n
 
                 print('Cost gen', cost_gen_)
                 print('Cost disc', cost_desc_)
-
                 ###
 
                 if print_debug:
@@ -533,6 +543,6 @@ class FactoredGatedAutoencoder:
 
             self.is_trained_disc = True
 
-        print('Disc Training DONE')
+        print('Simul. Training DONE')
 
         ###########$$$$$$$$$$$$$$

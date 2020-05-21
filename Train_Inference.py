@@ -81,6 +81,12 @@ def train_infer_two_gauss(data_name, exp_code, fac_num, hid_num, start_ind , end
         Y_all = np.concatenate((Y_pos, Y_neg))
         L_all = np.concatenate((L_pos, L_neg))
         print(len(L_neg),len(L_pos))
+
+        #print(np.apply_along_axis(np.linalg.norm, 1, X_all))
+        # X_all_normalized = X_all / np.array(np.apply_along_axis(np.linalg.norm, 1, X_all))[:, None]
+        # print(X_all_normalized)
+        # print(np.apply_along_axis(np.linalg.norm, 1, X_all_normalized))
+
         model.train_both(X_all, Y_all, L_all, epochs= ep_num, batch_size= 1, print_debug= True)
         model.save('./Weights/' + dataset + '_code' + str(exp_code) + '_')
 
@@ -106,7 +112,7 @@ start_index = index_list[current_ind]
 end_index = index_list[current_ind + 1]
 dataset = 'TwoGauss'
 
-train_infer_two_gauss('TwoGauss_data_7dim', exp_code = 1, fac_num=3, hid_num=3, start_ind = start_index, end_ind= end_index,
+train_infer_two_gauss('TwoGauss_data_7dim', exp_code = 1, fac_num=5, hid_num=3, start_ind = start_index, end_ind= end_index,
             GT_prcnt= 0.1, ep_num= num_epochs, train= True, infer= False)
 # datasets=['WPBC','Glass','Lympho','SatImage','PageBlocks','WDBC','Yeast05679v4','Wilt','Stamps','Pima','Ecoli4','SpamBase']
 
